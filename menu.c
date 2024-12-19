@@ -3,6 +3,8 @@
 #include "menu.h"
 #include "curso.h"
 #include "profesor.h"
+#include "estudiante.h"
+#include "materia.h"
 
 void showMenu(){
   int decision;
