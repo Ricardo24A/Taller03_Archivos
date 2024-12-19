@@ -1,4 +1,4 @@
-#include "profesores.h"
+#include "profesor.h"
 #include <stdio.h>
 #include <string.h>
 
