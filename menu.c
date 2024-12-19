@@ -35,11 +35,49 @@ void showMenu(){
 }
 
 void aMateria(){
-
+  int accion;
+    do{
+        printf("\n** Opciones de MATERIAS **\n 1. Crear Materia \n 2. Editar Materia \n 3. Retroceder \n");
+        printf("Ingresa la opcion deseada: ");
+        scanf("%d", &accion);
+        switch(accion){
+            case 1:
+                crearMateria();
+                break;
+            case 2:
+                editarMateria();
+                break;
+            case 3:
+                printf("Volviendo al menu principal...");
+                break;
+            default:
+                printf("Opcion no valida. Intenta de nuevo. \n");
+        }
+    } while (accion != 3);
+    return;
 }
 
 void bEstudiante(){
-
+  int accion;
+    do{
+        printf("\n** Opciones de CURSOS **\n 1. Crear registro Estudiante \n 2. Editar registro Estudiante \n 3. Retroceder \n");
+        printf("Ingresa la opcion deseada: ");
+        scanf("%d", &accion);
+        switch(accion){
+            case 1:
+                crearEstudiante();
+                break;
+            case 2:
+                editarEstudiante();
+                break;
+            case 3:
+                printf("Volviendo al menu principal...");
+                break;
+            default:
+                printf("Opcion no valida. Intenta de nuevo. \n");
+        }
+    } while (accion != 3);
+    return;
 }
 
 void cProfesor(){
