@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "menu.h"
+#include "curso.h"
+#include "profesor.h"
 
 void showMenu(){
   int decision;
@@ -26,7 +28,7 @@ void showMenu(){
         eSalir();
         break;
       default:
-        printf("Opciones no valida. Intenta de nuevo. \n");
+        printf("Opcion no valida. Intenta de nuevo. \n");
     }
   } while (decision != 5);
   return;
@@ -41,11 +43,49 @@ void bEstudiante(){
 }
 
 void cProfesor(){
-
+    int accion;
+    do{
+        printf("\n** Opciones de PROFESORES **\n 1. Crear registro Profesor \n 2. Editar registro Profesor \n 3. Retroceder \n");
+        printf("Ingresa la opcion deseada: ");
+        scanf("%d", &accion);
+        switch(accion){
+            case 1:
+                crearProfesor();
+                break;
+            case 2:
+                editarProfesor();
+                break;
+            case 3:
+                printf("Volviendo al menu principal...");
+                break;
+            default:
+                printf("Opcion no valida. Intenta de nuevo. \n");
+        }
+    } while (accion != 3);
+    return;
 }
 
 void dCurso(){
-
+    int accion;
+    do{
+        printf("\n** Opciones de CURSOS **\n 1. Crear Curso \n 2. Editar Curso \n 3. Retroceder \n");
+        printf("Ingresa la opcion deseada: ");
+        scanf("%d", &accion);
+        switch(accion){
+            case 1:
+                crearCurso();
+                break;
+            case 2:
+                editarCurso();
+                break;
+            case 3:
+                printf("Volviendo al menu principal...");
+                break;
+            default:
+                printf("Opcion no valida. Intenta de nuevo. \n");
+        }
+    } while (accion != 3);
+    return;
 }
 
 void salida(){
