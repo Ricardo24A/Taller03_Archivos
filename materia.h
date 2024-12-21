@@ -1,7 +1,9 @@
 #ifndef MATERIAS_H
 #define MATERIAS_H
 
+#ifndef MAX_MATERIAS
 #define MAX_MATERIAS 100
+#endif
 
 typedef struct {
     char nombre[50];

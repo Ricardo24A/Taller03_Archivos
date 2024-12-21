@@ -3,7 +3,9 @@
 
 #include <stdlib.h>
 
+#ifndef MAX_MATERIAS
 #define MAX_MATERIAS 10
+#endif
 
 typedef struct {
     char nombres[50];

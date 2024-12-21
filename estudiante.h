@@ -1,7 +1,9 @@
 #ifndef ESTUDIANTES_H
 #define ESTUDIANTES_H
 
+#ifndef MAX_ESTUDIANTES
 #define MAX_ESTUDIANTES 100
+#endif
 
 typedef struct {
     char nombres[50];

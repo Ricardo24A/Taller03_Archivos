@@ -2,15 +2,50 @@
 #include "profesor.h"
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
+#include <stdlib.h>
 
 static Curso *cursos = NULL;
 static int num_cursos = 0;
 static int capacidad_cursos = 10;
 
+void inicializarLosCursos() {
+    if (cursos == NULL) {
+        cursos = malloc(capacidad_cursos * sizeof(Curso));
+        if (cursos == NULL) {
+            printf("Error al asignar memoria para cursos.\n");
+            exit(1);
+        }
+    }
+}
+
+void expandirCursos() {
+    Curso *nuevo_bloque = malloc((capacidad_cursos + 10) * sizeof(Curso));
+    if (nuevo_bloque) {
+        memcpy(nuevo_bloque, cursos, capacidad_cursos * sizeof(Curso));
+        free(cursos);
+        cursos = nuevo_bloque;
+        capacidad_cursos += 10;
+    } else {
+        printf("Error al asignar memoria adicional para cursos.\n");
+        exit(1);
+    }
+}
+
+int compararFechas(const char *fecha1, const char *fecha2) {
+    return strcmp(fecha1, fecha2);
+}
+
+int buscarCursoPorCodigo(const char *codigo) {
+    for (int i = 0; i < num_cursos; i++) {
+        if (strcmp(cursos[i].codigo, codigo) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 void cargarCursosDelArchivo(const char *archivo) {
-    inicializarCursos();
+    inicializarLosCursos();
 
     FILE *file = fopen(archivo, "r");
     if (!file) {
@@ -18,8 +53,8 @@ void cargarCursosDelArchivo(const char *archivo) {
         return;
     }
 
-    char AlmacenarChars[256];
-    while (fgets(AlmacenarChars, sizeof(AlmacenarChars), file)) {
+    char AlmacenamientoChars[256];
+    while (fgets(AlmacenamientoChars, sizeof(AlmacenamientoChars), file)) {
         if (num_cursos >= capacidad_cursos) {
             expandirCursos();
         }
@@ -27,7 +62,7 @@ void cargarCursosDelArchivo(const char *archivo) {
         Curso nuevoCurso;
         char estudiantes_linea[256];
 
-        sscanf(AlmacenarChars, "%9[^-]-%29[^-]-%19[^-]-%10[^-]-%10[^-]",
+        sscanf(AlmacenamientoChars, "%9[^-]-%29[^-]-%19[^-]-%10[^-]-%10[^-]",
                nuevoCurso.codigo,
                nuevoCurso.materia,
                nuevoCurso.profesor_cc,
@@ -52,7 +87,7 @@ void cargarCursosDelArchivo(const char *archivo) {
     fclose(file);
 }
 
-void guardarCursosArchivo(const char *archivo) {
+void guardarCursosEnArchivo(const char *archivo) {
     FILE *file = fopen(archivo, "w");
     if (!file) {
         printf("No se pudo guardar en el archivo de cursos.\n");
@@ -75,16 +110,15 @@ void guardarCursosArchivo(const char *archivo) {
     fclose(file);
 }
 
-
 void crearCurso() {
-    inicializarCursos();
+    inicializarLosCursos();
 
     if (num_cursos >= capacidad_cursos) {
         expandirCursos();
     }
 
     Curso nuevoCurso;
-    printf("Ingrese el codigo del curso: ");
+    printf("\nIngrese el codigo del curso: ");
     fgets(nuevoCurso.codigo, sizeof(nuevoCurso.codigo), stdin);
     nuevoCurso.codigo[strcspn(nuevoCurso.codigo, "\n")] = '\0';
 
@@ -93,24 +127,27 @@ void crearCurso() {
         return;
     }
 
-    printf("Ingrese la materia: ");
+    printf("\nIngrese la materia: ");
     fgets(nuevoCurso.materia, sizeof(nuevoCurso.materia), stdin);
     nuevoCurso.materia[strcspn(nuevoCurso.materia, "\n")] = '\0';
 
     char cc[20];
     do {
-        printf("Ingrese la C.C. del profesor: ");
+        printf("\nIngrese la C.C. del profesor: ");
         fgets(cc, sizeof(cc), stdin);
         cc[strcspn(cc, "\n")] = '\0';
     } while (buscarProfesorPorCC(cc) == -1);
 
     strcpy(nuevoCurso.profesor_cc, cc);
 
-    printf("Ingrese la fecha de inicio (YYYY-MM-DD): ");
+    printf("\nIngrese la fecha de inicio (YYYY-MM-DD): ");
     fgets(nuevoCurso.fecha_inicio, sizeof(nuevoCurso.fecha_inicio), stdin);
     nuevoCurso.fecha_inicio[strcspn(nuevoCurso.fecha_inicio, "\n")] = '\0';
 
-    printf("Ingrese la fecha de fin (YYYY-MM-DD): ");
+    // Limpiar el buffer de entrada después de fgets
+    getchar();
+
+    printf("\nIngrese la fecha de fin (YYYY-MM-DD): ");
     fgets(nuevoCurso.fecha_fin, sizeof(nuevoCurso.fecha_fin), stdin);
     nuevoCurso.fecha_fin[strcspn(nuevoCurso.fecha_fin, "\n")] = '\0';
 
@@ -119,19 +156,32 @@ void crearCurso() {
         return;
     }
 
-    nuevoCurso.estudiantes = malloc(MAX_ESTUDIANTES * sizeof(char *));
-    nuevoCurso.num_estudiantes = 0;
+    printf("\nIngrese el numero de estudiantes (maximo 30): ");
+    int num_estudiantes;
+    scanf("%d", &num_estudiantes);
+    getchar();
+
+    if (num_estudiantes > 30) {
+        printf("No puede haber más de 30 estudiantes.\n");
+        return;
+    }
+
+    nuevoCurso.estudiantes = malloc(num_estudiantes * sizeof(char *));
+    nuevoCurso.num_estudiantes = num_estudiantes;
+
+    for (int i = 0; i < num_estudiantes; i++) {
+        nuevoCurso.estudiantes[i] = malloc(30 * sizeof(char));
+        printf("Ingrese la matricula del estudiante %d: ", i + 1);
+        fgets(nuevoCurso.estudiantes[i], 30, stdin);
+        nuevoCurso.estudiantes[i][strcspn(nuevoCurso.estudiantes[i], "\n")] = '\0';
+    }
 
     cursos[num_cursos++] = nuevoCurso;
-    guardarCursosEnArchivo("cursos.txt");
-    printf("Curso creado con exito.\n");
 }
 
-
 void editarCurso() {
-    cargarCursosDesdeArchivo("cursos.txt");
     char codigo[10];
-    printf("Ingrese el codigo del curso: ");
+    printf("\nIngrese el codigo del curso: ");
     fgets(codigo, sizeof(codigo), stdin);
     codigo[strcspn(codigo, "\n")] = '\0';
 
@@ -142,57 +192,28 @@ void editarCurso() {
     }
 
     Curso *curso = &cursos[indice];
-
     char nueva_fecha_inicio[11];
-    printf("Ingrese la nueva fecha de inicio (YYYY-MM-DD): ");
+    printf("\nIngrese la nueva fecha de inicio (YYYY-MM-DD): ");
     fgets(nueva_fecha_inicio, sizeof(nueva_fecha_inicio), stdin);
     nueva_fecha_inicio[strcspn(nueva_fecha_inicio, "\n")] = '\0';
 
     if (compararFechas(nueva_fecha_inicio, curso->fecha_inicio) <= 0) {
         strcpy(curso->fecha_inicio, nueva_fecha_inicio);
-        guardarCursosEnArchivo("cursos.txt");
         printf("Curso editado con exito.\n");
     } else {
         printf("No se puede editar un curso cuya fecha de inicio ya comenzo.\n");
     }
-}
 
-void inicializarLosCursos() {
-    if (cursos == NULL) {
-        cursos = malloc(capacidad_cursos * sizeof(Curso));
-    }
-}
+    getchar();
+    char nueva_fecha_fin[11];
+    printf("\nIngrese la nueva fecha de fin (YYYY-MM-DD): ");
+    fgets(nueva_fecha_fin, sizeof(nueva_fecha_fin), stdin);
+    nueva_fecha_fin[strcspn(nueva_fecha_fin, "\n")] = '\0';
 
-void expandirCursos() {
-    Curso *nuevo_bloque = malloc((capacidad_cursos + 10) * sizeof(Curso));
-    if (nuevo_bloque) {
-        memcpy(nuevo_bloque, cursos, capacidad_cursos * sizeof(Curso));
-        free(cursos);
-        cursos = nuevo_bloque;
-        capacidad_cursos += 10;
+    if (compararFechas(nueva_fecha_inicio, nueva_fecha_fin) > 0) {
+        printf("La fecha de inicio no puede ser mayor que la fecha de fin.\n");
     } else {
-        printf("Error al asignar memoria adicional para cursos.\n");
+        strcpy(curso->fecha_fin, nueva_fecha_fin);
+        printf("Fecha de fin actualizada con exito.\n");
     }
-}
-
-
-int buscarCursoPorCodigo(const char *codigo) {
-    for (int i = 0; i < num_cursos; i++) {
-        if (strcmp(cursos[i].codigo, codigo) == 0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
-int compararFechas(const char *fecha1, const char *fecha2) {
-    struct tm tm1, tm2;
-    strptime(fecha1, "%Y-%m-%d", &tm1);
-    strptime(fecha2, "%Y-%m-%d", &tm2);
-
-    time_t time1 = mktime(&tm1);
-    time_t time2 = mktime(&tm2);
-
-    return difftime(time1, time2);
 }

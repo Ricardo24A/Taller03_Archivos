@@ -42,7 +42,7 @@ void guardarMateriasEnArchivo(const char *archivo) {
 
 void crearMateria() {
     if (num_materias >= MAX_MATERIAS) {
-        printf("No se pueden agregar más materias.\n");
+        printf("No se pueden agregar mas materias.\n");
         return;
     }
 
@@ -51,13 +51,14 @@ void crearMateria() {
     fgets(nuevaMateria.nombre, sizeof(nuevaMateria.nombre), stdin);
     nuevaMateria.nombre[strcspn(nuevaMateria.nombre, "\n")] = '\0';
 
-    printf("Ingrese el código de la materia: ");
+    printf("Ingrese el codigo de la materia: ");
     fgets(nuevaMateria.codigo, sizeof(nuevaMateria.codigo), stdin);
     nuevaMateria.codigo[strcspn(nuevaMateria.codigo, "\n")] = '\0';
 
+    // Verificar que el código no exista ya
     for (int i = 0; i < num_materias; i++) {
         if (strcmp(materias[i].codigo, nuevaMateria.codigo) == 0) {
-            printf("El código ya existe.\n");
+            printf("El codigo ya existe.\n");
             return;
         }
     }
@@ -65,13 +66,14 @@ void crearMateria() {
     strcpy(nuevaMateria.estado, "Activo");
 
     materias[num_materias++] = nuevaMateria;
-    guardarMateriasEnArchivo("materias.txt");
-    printf("Materia creada con éxito.\n");
+    // Guardar solo al final
+    //guardarMateriasEnArchivo("materias.txt");
+    printf("Materia creada con exito.\n");
 }
 
 void editarMateria() {
     char codigo[10];
-    printf("Ingrese el código de la materia: ");
+    printf("Ingrese el codigo de la materia: ");
     fgets(codigo, sizeof(codigo), stdin);
     codigo[strcspn(codigo, "\n")] = '\0';
 
@@ -89,8 +91,9 @@ void editarMateria() {
             }
 
             strcpy(materias[i].estado, nuevoEstado);
-            guardarMateriasEnArchivo("materias.txt");
-            printf("Materia editada con éxito.\n");
+            // Guardar solo al final
+            //guardarMateriasEnArchivo("materias.txt");
+            printf("Materia editada con exito.\n");
             return;
         }
     }

@@ -76,17 +76,23 @@ void crearEstudiante() {
     fgets(nuevoEstudiante.usuario, sizeof(nuevoEstudiante.usuario), stdin);
     nuevoEstudiante.usuario[strcspn(nuevoEstudiante.usuario, "\n")] = '\0';
 
+    for (int i = 0; i < num_estudiantes; i++) {
+        if (strcmp(estudiantes[i].usuario, nuevoEstudiante.usuario) == 0) {
+            printf("El usuario ya existe.\n");
+            return;
+        }
+    }
+
     printf("Ingrese la clave: ");
     fgets(nuevoEstudiante.clave, sizeof(nuevoEstudiante.clave), stdin);
     nuevoEstudiante.clave[strcspn(nuevoEstudiante.clave, "\n")] = '\0';
 
     strcpy(nuevoEstudiante.estado, "Activo");
 
-    estudiantes[num_estudiantes++] = nuevoEstudiante;
-    guardarEstudiantesEnArchivo("estudiantes.txt");
-    printf("Estudiante creado con éxito.\n");
+    estudiantes[num_estudiantes++] = nuevoEstudiante;  // Agregar el nuevo estudiante a la lista
 }
 
+// Editar un estudiante
 void editarEstudiante() {
     char matricula[15];
     printf("Ingrese la matrícula del estudiante: ");
@@ -103,7 +109,6 @@ void editarEstudiante() {
             fgets(estudiantes[i].estado, sizeof(estudiantes[i].estado), stdin);
             estudiantes[i].estado[strcspn(estudiantes[i].estado, "\n")] = '\0';
 
-            guardarEstudiantesEnArchivo("estudiantes.txt");
             printf("Estudiante editado con éxito.\n");
             return;
         }

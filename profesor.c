@@ -2,17 +2,19 @@
 #include <stdio.h>
 #include <string.h>
 
+
 static Profesor *profesores = NULL;
 static int num_profesores = 0;
 static int capacidad_profesores = 10;
 
-
+// Funcion para inicializar el arreglo de profesores
 void inicializarProfesores() {
     if (profesores == NULL) {
         profesores = malloc(capacidad_profesores * sizeof(Profesor));
     }
 }
 
+// Función para expandir el arreglo de profesores
 void expandirProfesores() {
     Profesor *nuevo_bloque = malloc((capacidad_profesores + 10) * sizeof(Profesor));
     if (nuevo_bloque) {
@@ -25,7 +27,7 @@ void expandirProfesores() {
     }
 }
 
-
+// Cargar los datos de los profesores desde un archivo al inicio
 void cargarProfesoresDesdeArchivo(const char *archivo) {
     inicializarProfesores();
 
@@ -44,6 +46,7 @@ void cargarProfesoresDesdeArchivo(const char *archivo) {
         Profesor nuevoProf;
         char materias[256];
 
+        // Leer los datos del profesor
         sscanf(AlmacenamientoChars, "%49[^-]-%49[^-]-%19[^-]-%29[^-]-%19[^-]-%9[^-]",
                nuevoProf.nombres,
                nuevoProf.apellidos,
@@ -67,6 +70,7 @@ void cargarProfesoresDesdeArchivo(const char *archivo) {
     fclose(file);
 }
 
+// Guardar los datos de los profesores al finalizar
 void guardarProfesoresEnArchivo(const char *archivo) {
     FILE *file = fopen(archivo, "w");
     if (!file) {
@@ -75,7 +79,7 @@ void guardarProfesoresEnArchivo(const char *archivo) {
     }
 
     for (int i = 0; i < num_profesores; i++) {
-        fprintf(file, "%s-%s-%s-%s-%s-%s\n",
+        fprintf(file, "%s-%s-%s-%s-%s-%s-",
                 profesores[i].nombres,
                 profesores[i].apellidos,
                 profesores[i].cc,
@@ -84,17 +88,19 @@ void guardarProfesoresEnArchivo(const char *archivo) {
                 profesores[i].estado);
 
         for (int j = 0; j < profesores[i].num_materias; j++) {
-            fprintf(file, "%s%s", profesores[i].materias[j], (j < profesores[i].num_materias - 1) ? "/" : "\n");
+            fprintf(file, "%s", profesores[i].materias[j]);
+            if (j < profesores[i].num_materias - 1) {
+                fprintf(file, "/");
+            }
         }
+        fprintf(file, "\n");
     }
 
     fclose(file);
 }
 
-
+// Crear un nuevo profesor
 void crearProfesor() {
-    inicializarProfesores();
-
     if (num_profesores >= capacidad_profesores) {
         expandirProfesores();
     }
@@ -126,7 +132,7 @@ void crearProfesor() {
 
     strcpy(nuevo.estado, "Activo");
 
-    printf("Ingrese el número de materias: ");
+    printf("Ingrese el numero de materias: ");
     scanf(" %d", &nuevo.num_materias);
     getchar();
 
@@ -138,12 +144,10 @@ void crearProfesor() {
 
     profesores[num_profesores++] = nuevo;
     guardarProfesoresEnArchivo("profesores.txt");
-    printf("Profesor creado con éxito.\n");
 }
 
-
+// Editar un profesor
 void editarProfesor() {
-    cargarProfesoresDesdeArchivo("profesores.txt");
     char cc[20];
     printf("Ingrese la C.C. del profesor: ");
     fgets(cc, sizeof(cc), stdin);
@@ -172,10 +176,10 @@ void editarProfesor() {
     }
 
     strcpy(profesor->estado, nuevo_estado);
-    guardarProfesoresEnArchivo("profesores.txt");
-    printf("Profesor editado con éxito.\n");
+    printf("Profesor editado con exito.\n");
 }
 
+// Buscar un profesor por C.C.
 int buscarProfesorPorCC(const char *cc) {
     for (int i = 0; i < num_profesores; i++) {
         if (strcmp(profesores[i].cc, cc) == 0) {
@@ -185,6 +189,7 @@ int buscarProfesorPorCC(const char *cc) {
     return -1;
 }
 
+// Buscar un profesor por usuario
 int buscarProfesorPorUsuario(const char *usuario) {
     for (int i = 0; i < num_profesores; i++) {
         if (strcmp(profesores[i].usuario, usuario) == 0) {
