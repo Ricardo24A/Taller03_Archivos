@@ -1,4 +1,5 @@
 #include "materia.h"
+#include "curso.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,8 +67,6 @@ void crearMateria() {
     strcpy(nuevaMateria.estado, "Activo");
 
     materias[num_materias++] = nuevaMateria;
-    // Guardar solo al final
-    //guardarMateriasEnArchivo("materias.txt");
     printf("Materia creada con exito.\n");
 }
 
@@ -84,19 +83,37 @@ void editarMateria() {
             fgets(nuevoEstado, sizeof(nuevoEstado), stdin);
             nuevoEstado[strcspn(nuevoEstado, "\n")] = '\0';
 
-            // Verificar restricciones antes de inactivar
             if (strcmp(nuevoEstado, "Inactivo") == 0) {
-                printf("No se puede inactivar una materia con cursos en proceso.\n");
-                return;
+                // Validacion: verificar si la materia esta asociada a cursos en proceso
+                if (materiaEnCurso(codigo)) {
+                    printf("No se puede inactivar una materia con cursos en proceso.\n");
+                    return;
+                }
             }
 
             strcpy(materias[i].estado, nuevoEstado);
-            // Guardar solo al final
-            //guardarMateriasEnArchivo("materias.txt");
             printf("Materia editada con exito.\n");
             return;
         }
     }
 
-    printf("Materia no encontrada.\n");
+    printf("La materia con el codigo %s no existe.\n", codigo);
+}
+
+int buscarMateriaPorCodigo(const char *codigo) {
+    for (int i = 0; i < num_materias; i++) {
+        if (strcmp(materias[i].codigo, codigo) == 0) {
+            return i; // Se encuentra la materia
+        }
+    }
+    return -1;
+}
+
+int materiaEnCurso(const char *codigoMateria) {
+    for (int i = 0; i < num_cursos; i++) {
+        if (strcmp(cursos[i].materia, codigoMateria) == 0 && cursoEstaEnProceso(&cursos[i])) {
+            return 1;
+        }
+    }
+    return 0;
 }

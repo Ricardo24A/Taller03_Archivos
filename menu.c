@@ -154,4 +154,5 @@ void eSalir(){
 
   // Mensaje final
   printf("\nSaliendo del programa. Hasta la proxima! \n");
+  exit(0);
 }

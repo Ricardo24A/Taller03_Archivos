@@ -16,5 +16,6 @@ void cargarMateriasDesdeArchivo(const char *archivo);
 void guardarMateriasEnArchivo(const char *archivo);
 void crearMateria();
 void editarMateria();
-
+int buscarMateriaPorCodigo(const char *codigo);
+int materiaEnCurso(const char *codigoMateria);
 #endif // MATERIAS_H

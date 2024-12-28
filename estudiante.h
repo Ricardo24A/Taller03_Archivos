@@ -19,5 +19,7 @@ void cargarEstudiantesDesdeArchivo(const char *archivo);
 void guardarEstudiantesEnArchivo(const char *archivo);
 void crearEstudiante();
 void editarEstudiante();
-
+int buscarEstudiantePorMat(const char *matricula);
+int buscarEstudiantePorUsuario(const char *usuario);
+int estudianteTieneCursos(const char *mat);
 #endif // ESTUDIANTES_H
